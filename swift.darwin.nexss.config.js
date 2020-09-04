@@ -1,4 +1,4 @@
-let languageConfig = Object.assign({}, require(`./swift.win32.nexss.config`));
+let languageConfig = Object.assign({}, require(`./swift.linux.nexss.config`));
 languageConfig.compilers = {
   macOS: {
     install: "installed", // Not working yet on Windows
