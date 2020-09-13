@@ -39,5 +39,44 @@ languageConfig.errors = require("./nexss.swift.errors");
 languageConfig.languagePackageManagers = {
   // TODO:
 };
+if (process.platform === "linux") {
+  const {
+    replaceCommandByDist,
+    dist,
+  } = require(`${process.env.NEXSS_SRC_PATH}/lib/osys`);
+
+  const distName = dist();
+  languageConfig.dist = distName;
+
+  // TODO: Later to cleanup this config file !!
+  switch (distName) {
+    case "Arch Linux":
+      // ADD LATER TO TOP!!! pacman -Sy binutils fakeroot sudo --noconfirm --needed
+      // ADD LATER TO TOP!!! pacman -Sy binutils fakeroot sudo --noconfirm --needed
+      languageConfig.compilers.apt.install = `pacman -Sy binutils python python-pip fakeroot sudo --noconfirm --needed
+if [ ! -d "/home/nexss" ]; then mkdir -p /home/nexss; fi
+if [ ! id "nexss"] &>/dev/null; then useradd nexss && usermod -d /home/nexss -m nexss; fi
+chown -R nexss:nexss /home/nexss; 
+grep -qxF 'nexss ALL=NOPASSWD: ALL' /etc/sudoers || echo 'nexss ALL=NOPASSWD: ALL' >> /etc/sudoers
+cd /home/nexss
+rm -rf package-query
+rm -rf yaourt.git
+sudo -u nexss git clone https://aur.archlinux.org/package-query.git
+cd package-query
+yes | sudo -u nexss makepkg -si
+cd ..
+sudo -u nexss git clone https://aur.archlinux.org/yaourt.git
+cd yaourt
+yes | sudo -u nexss makepkg -si
+cd ..
+sudo -u nexss yaourt -S --noconfirm swift-bin`; // swift
+      break;
+    default:
+      languageConfig.compilers.apt.install = replaceCommandByDist(
+        languageConfig.compilers.apt.install
+      );
+      break;
+  }
+}
 
 module.exports = languageConfig;
