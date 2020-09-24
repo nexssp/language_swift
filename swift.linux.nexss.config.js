@@ -22,7 +22,7 @@ if (process.getuid && process.getuid() === 0) {
 languageConfig.compilers = {
   apt: {
     // Ubuntu
-    install: `${sudo}apt install -y clang libcurl3 libpython2.7 libpython2.7-dev
+    install: `${sudo}apt install -y clang libcurl? libpython2.7 libpython2.7-dev
   wget https://swift.org/builds/swift-5.2.5-release/ubuntu1804/swift-5.2.5-RELEASE/swift-5.2.5-RELEASE-ubuntu18.04.tar.gz
   tar xzf swift-5.2.5-RELEASE-ubuntu18.04.tar.gz
   ${sudo}mv swift-5.2.5-RELEASE-ubuntu18.04 /usr/share/swift
@@ -53,10 +53,10 @@ if (process.platform === "linux") {
     case "Arch Linux":
       // ADD LATER TO TOP!!! pacman -Sy binutils fakeroot sudo --noconfirm --needed
       // ADD LATER TO TOP!!! pacman -Sy binutils fakeroot sudo --noconfirm --needed
-      languageConfig.compilers.apt.install = `pacman -Sy binutils python python-pip fakeroot sudo --noconfirm --needed
-if [ ! -d "/home/nexss" ]; then mkdir -p /home/nexss; fi
-if [ ! id "nexss"] &>/dev/null; then useradd nexss && usermod -d /home/nexss -m nexss; fi
-chown -R nexss:nexss /home/nexss; 
+      languageConfig.compilers.apt.install = `${sudo}pacman -Sy pkgconf binutils python python-pip fakeroot sudo --noconfirm --needed
+if [ ! -d "/home/nexss" ]; then ${sudo}mkdir -p /home/nexss; fi
+if [ ! id "nexss"] &>/dev/null; then ${sudo}useradd nexss && ${sudo}usermod -d /home/nexss -m nexss; fi
+${sudo}chown -R nexss:nexss /home/nexss
 grep -qxF 'nexss ALL=NOPASSWD: ALL' /etc/sudoers || echo 'nexss ALL=NOPASSWD: ALL' >> /etc/sudoers
 cd /home/nexss
 rm -rf package-query
