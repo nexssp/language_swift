@@ -90,7 +90,8 @@ tar xzf ${
 echo "Please reload your bash profile: '. ~/.bashrc' OR 'source ~/.bashrc'"${
       depsRemove ? "\n" + depsRemove : ""
     }
-. ~/.bashrc`), // Not working yet on Windows
+. ~/.bashrc
+ln -sf /usr/share/swift/usr/bin/swift /usr/bin/swift`), // Not working yet on Windows
     command: "swift",
     args: "<file>",
     help: ``,
