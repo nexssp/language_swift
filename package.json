@@ -1,0 +1,23 @@
+{
+  "name": "language_swift.git",
+  "version": "1.0.0",
+  "description": "To Install Nexss Programmer please go to [Nexss Programmer CLI](https://github.com/nexssp/cli#readme) for more information.\r You can also find some R&D on wiki pages: <https://github.com/nexssp/language_nodejs/wiki>",
+  "main": "nexss.swift.errors.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/nexssp/language_swift.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/nexssp/language_swift/issues"
+  },
+  "homepage": "https://github.com/nexssp/language_swift#readme",
+  "dependencies": {
+    "@nexssp/os": "^1.0.17"
+  }
+}

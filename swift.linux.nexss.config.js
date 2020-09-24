@@ -2,6 +2,13 @@ let languageConfig = Object.assign(
   {},
   require(`../config.${process.platform}`)
 );
+
+const os = require("@nexssp/os");
+const distName = os.name();
+const distVersion = os.v();
+languageConfig.dist = distName;
+let sudo = os.sudo();
+
 languageConfig.title = "Swift";
 languageConfig.description =
   "The powerful programming language that is also easy to learn.";
@@ -15,21 +22,75 @@ languageConfig.checkSyntax = "";
 languageConfig.interactiveShell = "";
 languageConfig.builders = {};
 
-let sudo = "sudo ";
-if (process.getuid && process.getuid() === 0) {
-  sudo = "";
+let swiftPack =
+  "https://github.com/apple/swift/archive/swift-5.3-RELEASE.tar.gz";
+
+// Works on UBUNTU?
+swiftPack =
+  "https://swift.org/builds/swift-5.3-release/ubuntu1804/swift-5.3-RELEASE/swift-5.3-RELEASE-ubuntu18.04.tar.gz";
+
+let deps =
+  "wget clang libxml2 libcurl4 libncurses? libpython2.7 libpython2.7-dev";
+// ==========================================
+
+// ==========================================
+
+let depsRemove = "";
+
+switch (distName) {
+  case os.distros.ALPINE:
+    deps = "wget clang libxml2 libcurl ncurses-libs python2";
+    // depsRemove = "apk del libc6-dbg"; //
+    break;
+  case os.distros.UBUNTU:
+    if (distVersion > 20) {
+      swiftPack =
+        "https://swift.org/builds/swift-5.3-release/ubuntu2004/swift-5.3-RELEASE/swift-5.3-RELEASE-ubuntu20.04.tar.gz";
+    } else if (distVersion > 18) {
+      swiftPack =
+        "https://swift.org/builds/swift-5.3-release/ubuntu1804/swift-5.3-RELEASE/swift-5.3-RELEASE-ubuntu18.04.tar.gz";
+    } else {
+      swiftPack =
+        "https://swift.org/builds/swift-5.3-release/ubuntu1604/swift-5.3-RELEASE/swift-5.3-RELEASE-ubuntu16.04.tar.gz";
+    }
+    break;
+  case os.distros.AMAZON:
+    swiftPack =
+      "https://swift.org/builds/swift-5.3-release/amazonlinux2/swift-5.3-RELEASE/swift-5.3-RELEASE-amazonlinux2.tar.gz";
+    break;
+  case os.distros.CENTOS:
+    if (distVersion >= 8) {
+      swiftPack =
+        "https://swift.org/builds/swift-5.3-release/centos8/swift-5.3-RELEASE/swift-5.3-RELEASE-centos8.tar.gz";
+    } else {
+      swiftPack =
+        "https://swift.org/builds/swift-5.3-release/centos7/swift-5.3-RELEASE/swift-5.3-RELEASE-centos7.tar.gz";
+    }
+
+    break;
+  default:
+    break;
 }
+
+const fileName = require("path").basename(swiftPack);
+
 languageConfig.compilers = {
   apt: {
     // Ubuntu
-    install: `${sudo}apt install -y clang libcurl? libpython2.7 libpython2.7-dev
-  wget https://swift.org/builds/swift-5.2.5-release/ubuntu1804/swift-5.2.5-RELEASE/swift-5.2.5-RELEASE-ubuntu18.04.tar.gz
-  tar xzf swift-5.2.5-RELEASE-ubuntu18.04.tar.gz
-  ${sudo}mv swift-5.2.5-RELEASE-ubuntu18.04 /usr/share/swift
-  grep -qxF 'export PATH="/usr/share/swift/usr/bin/:$PATH"' ~/.bashrc || echo 'export PATH="/usr/share/swift/usr/bin/:$PATH"' >> ~/.bashrc
-  rm swift-5.2.5-RELEASE-ubuntu18.04.tar.gz
-  ${sudo}apt remove -y libc6-dbg # This needs to be here due to error: ld-2.27.so 0x7fffffff0005c587: adding range [0x1469a-0x1470a) which has a base that is less than the function's low PC 0x14e10
-  . ~/.bashrc`, // Not working yet on Windows
+    install: os.replacePMByDistro(`${sudo}apt install -y ${deps}
+if [ ! -f ${
+      process.env.NEXSS_APPS_PATH
+    }/${fileName} ];then wget ${swiftPack} -P ${
+      process.env.NEXSS_APPS_PATH
+    } ; fi
+mkdir -p /usr/share/swift
+tar xzf ${
+      process.env.NEXSS_APPS_PATH
+    }/${fileName} -C /usr/share/swift --strip-components 1
+echo "Please reload your bash profile: '. ~/.bashrc' OR 'source ~/.bashrc'"${
+      depsRemove ? "\n" + depsRemove : ""
+    }
+. ~/.bashrc`), // Not working yet on Windows
     command: "swift",
     args: "<file>",
     help: ``,
@@ -39,21 +100,13 @@ languageConfig.errors = require("./nexss.swift.errors");
 languageConfig.languagePackageManagers = {
   // TODO:
 };
-if (process.platform === "linux") {
-  const {
-    replaceCommandByDist,
-    dist,
-  } = require(`${process.env.NEXSS_SRC_PATH}/lib/osys`);
 
-  const distName = dist();
-  languageConfig.dist = distName;
-
-  // TODO: Later to cleanup this config file !!
-  switch (distName) {
-    case "Arch Linux":
-      // ADD LATER TO TOP!!! pacman -Sy binutils fakeroot sudo --noconfirm --needed
-      // ADD LATER TO TOP!!! pacman -Sy binutils fakeroot sudo --noconfirm --needed
-      languageConfig.compilers.apt.install = `${sudo}pacman -Sy pkgconf binutils python python-pip fakeroot sudo --noconfirm --needed
+// TODO: Later to cleanup this config file !!
+switch (distName) {
+  case "Arch Linux":
+    // ADD LATER TO TOP!!! pacman -Sy binutils fakeroot sudo --noconfirm --needed
+    // ADD LATER TO TOP!!! pacman -Sy binutils fakeroot sudo --noconfirm --needed
+    languageConfig.compilers.apt.install = `${sudo}pacman -Sy pkgconf binutils python python-pip fakeroot sudo --noconfirm --needed
 if [ ! -d "/home/nexss" ]; then ${sudo}mkdir -p /home/nexss; fi
 if [ ! id "nexss"] &>/dev/null; then ${sudo}useradd nexss && ${sudo}usermod -d /home/nexss -m nexss; fi
 ${sudo}chown -R nexss:nexss /home/nexss
@@ -70,13 +123,16 @@ cd yaourt
 yes | sudo -u nexss makepkg -si
 cd ..
 sudo -u nexss yaourt -S --noconfirm swift-bin`; // swift
-      break;
-    default:
-      languageConfig.compilers.apt.install = replaceCommandByDist(
-        languageConfig.compilers.apt.install
-      );
-      break;
-  }
+    break;
+  default:
+    languageConfig.compilers.apt.install = os.replacePMByDistro(
+      languageConfig.compilers.apt.install
+    );
+    // +
+    //         `
+    // cd /usr/share/swift/utils
+    // ./update-checkout --clone`
+    //     );
+    break;
 }
-
 module.exports = languageConfig;
