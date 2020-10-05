@@ -3,7 +3,7 @@ let languageConfig = Object.assign(
   require(`../config.${process.platform}`)
 );
 
-const os = require("@nexssp/os");
+const os = require(`${process.env.NEXSS_SRC_PATH}/node_modules/@nexssp/os/`);
 const distName = os.name();
 const distVersion = os.v();
 languageConfig.dist = distName;
@@ -12,7 +12,7 @@ let sudo = os.sudo();
 languageConfig.title = "Swift";
 languageConfig.description =
   "The powerful programming language that is also easy to learn.";
-languageConfig.url = "https://nodejs.org";
+languageConfig.url = "https://swift.org";
 languageConfig.founders = ["Chris Lattner", "Apple Inc."];
 languageConfig.years = ["2014"];
 languageConfig.extensions = [".swift"];
