@@ -88,11 +88,9 @@ if [ ! -f ${
 ${sudo}mkdir -p /usr/share/swift
 ${sudo}tar xzf ${
       process.env.NEXSS_APPS_PATH
-    }/${fileName} -C /usr/share/swift --strip-components 1
-echo "Please reload your bash profile: '. ~/.bashrc' OR 'source ~/.bashrc'"${
+    }/${fileName} -C /usr/share/swift --strip-components 1${
       depsRemove ? "\n" + depsRemove : ""
     }
-. ~/.bashrc
 ${sudo}ln -sf /usr/share/swift/usr/bin/swift /usr/bin/swift`), // Not working yet on Windows
     command: "swift",
     args: "<file>",
