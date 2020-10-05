@@ -43,6 +43,8 @@ switch (distName) {
     // depsRemove = "apk del libc6-dbg"; //
     break;
   case os.distros.UBUNTU:
+    deps =
+      "wget clang libxml2 libcurl4 libncurses-dev libpython2.7 libpython2.7-dev";
     if (distVersion > 20) {
       swiftPack =
         "https://swift.org/builds/swift-5.3-release/ubuntu2004/swift-5.3-RELEASE/swift-5.3-RELEASE-ubuntu20.04.tar.gz";
@@ -83,15 +85,15 @@ if [ ! -f ${
     }/${fileName} ];then wget ${swiftPack} -P ${
       process.env.NEXSS_APPS_PATH
     } ; fi
-mkdir -p /usr/share/swift
-tar xzf ${
+${sudo}mkdir -p /usr/share/swift
+${sudo}tar xzf ${
       process.env.NEXSS_APPS_PATH
     }/${fileName} -C /usr/share/swift --strip-components 1
 echo "Please reload your bash profile: '. ~/.bashrc' OR 'source ~/.bashrc'"${
       depsRemove ? "\n" + depsRemove : ""
     }
 . ~/.bashrc
-ln -sf /usr/share/swift/usr/bin/swift /usr/bin/swift`), // Not working yet on Windows
+${sudo}ln -sf /usr/share/swift/usr/bin/swift /usr/bin/swift`), // Not working yet on Windows
     command: "swift",
     args: "<file>",
     help: ``,
