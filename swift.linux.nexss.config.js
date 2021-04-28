@@ -3,11 +3,10 @@ let languageConfig = Object.assign(
   require(`../config.${process.platform}`)
 );
 
-const os = require(`${process.env.NEXSS_SRC_PATH}/node_modules/@nexssp/os/`);
-const distName = os.name();
-const distVersion = os.v();
+const distName = process.distro;
+const distVersion = process.distroVersion * 1;
 languageConfig.dist = distName;
-let sudo = os.sudo();
+let sudo = process.sudo;
 
 languageConfig.title = "Swift";
 languageConfig.description =
@@ -38,35 +37,35 @@ let deps =
 let depsRemove = "";
 
 switch (distName) {
-  case os.distros.ALPINE:
+  case process.distros.ALPINE:
     deps = "wget clang libxml2 libcurl ncurses-libs python2";
     // depsRemove = "apk del libc6-dbg"; //
     break;
-  case os.distros.UBUNTU:
+  case process.distros.UBUNTU:
     deps =
       "wget clang libxml2 libcurl4 libncurses-dev libpython2.7 libpython2.7-dev";
     if (distVersion > 20) {
       swiftPack =
-        "https://swift.org/builds/swift-5.3-release/ubuntu2004/swift-5.3-RELEASE/swift-5.3-RELEASE-ubuntu20.04.tar.gz";
+        "https://swift.org/builds/swift-5.4-release/ubuntu2004/swift-5.4-RELEASE/swift-5.4-RELEASE-ubuntu20.04.tar.gz";
     } else if (distVersion > 18) {
       swiftPack =
-        "https://swift.org/builds/swift-5.3-release/ubuntu1804/swift-5.3-RELEASE/swift-5.3-RELEASE-ubuntu18.04.tar.gz";
+        "https://swift.org/builds/swift-5.4-release/ubuntu1804/swift-5.4-RELEASE/swift-5.4-RELEASE-ubuntu18.04.tar.gz";
     } else {
       swiftPack =
-        "https://swift.org/builds/swift-5.3-release/ubuntu1604/swift-5.3-RELEASE/swift-5.3-RELEASE-ubuntu16.04.tar.gz";
+        "https://swift.org/builds/swift-5.4-release/ubuntu1604/swift-5.4-RELEASE/swift-5.4-RELEASE-ubuntu16.04.tar.gz";
     }
     break;
-  case os.distros.AMAZON:
+  case process.distros.AMAZON:
     swiftPack =
-      "https://swift.org/builds/swift-5.3-release/amazonlinux2/swift-5.3-RELEASE/swift-5.3-RELEASE-amazonlinux2.tar.gz";
+      "https://swift.org/builds/swift-5.4-release/amazonlinux2/swift-5.4-RELEASE/swift-5.4-RELEASE-amazonlinux2.tar.gz";
     break;
-  case os.distros.CENTOS:
+  case process.distros.CENTOS:
     if (distVersion >= 8) {
       swiftPack =
-        "https://swift.org/builds/swift-5.3-release/centos8/swift-5.3-RELEASE/swift-5.3-RELEASE-centos8.tar.gz";
+        "https://swift.org/builds/swift-5.4-release/centos8/swift-5.4-RELEASE/swift-5.4-RELEASE-centos8.tar.gz";
     } else {
       swiftPack =
-        "https://swift.org/builds/swift-5.3-release/centos7/swift-5.3-RELEASE/swift-5.3-RELEASE-centos7.tar.gz";
+        "https://swift.org/builds/swift-5.4-release/centos7/swift-5.4-RELEASE/swift-5.4-RELEASE-centos7.tar.gz";
     }
 
     break;
@@ -79,7 +78,7 @@ const fileName = require("path").basename(swiftPack);
 languageConfig.compilers = {
   apt: {
     // Ubuntu
-    install: os.replacePMByDistro(`${sudo}apt install -y ${deps}
+    install: process.replacePMByDistro(`${sudo}apt install -y ${deps}
 if [ ! -f ${
       process.env.NEXSS_APPS_PATH
     }/${fileName} ];then wget ${swiftPack} -P ${
@@ -104,7 +103,7 @@ languageConfig.languagePackageManagers = {
 
 // TODO: Later to cleanup this config file !!
 switch (distName) {
-  case "Arch Linux":
+  case process.distros.ARCH:
     // ADD LATER TO TOP!!! pacman -Sy binutils fakeroot sudo --noconfirm --needed
     // ADD LATER TO TOP!!! pacman -Sy binutils fakeroot sudo --noconfirm --needed
     languageConfig.compilers.apt.install = `${sudo}pacman -Sy pkgconf binutils python python-pip fakeroot sudo --noconfirm --needed
@@ -126,7 +125,7 @@ cd ..
 sudo -u nexss yaourt -S --noconfirm swift-bin`; // swift
     break;
   default:
-    languageConfig.compilers.apt.install = os.replacePMByDistro(
+    languageConfig.compilers.apt.install = process.replacePMByDistro(
       languageConfig.compilers.apt.install
     );
     // +
