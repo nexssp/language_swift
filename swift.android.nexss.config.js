@@ -4,7 +4,7 @@ const distName = process.distro;
 languageConfig.dist = distName;
 
 languageConfig.compilers = {
-  kotlin: {
+  swift: {
     install: `pkg install -y swift`,
     command: "swift",
     args: "<file>",
